@@ -1,0 +1,107 @@
+[PROJECT]
+Target=main.hex
+Processor_Text=PIC16F877A
+CCSVerions=5.115
+Compiler=PCM
+CCSVersion=5.115
+[Target Data]
+FileList=main.c
+[Directories]
+Include=
+[D:\do an 1\test code\CODE3\main]
+Type=4
+[mru-list]
+1=main.c
+
+[fileformats]
+forcecoff=0
+
+[ProjectLog]
+Days=7
+D1=18-04-2025
+D1_L=24
+D1_L1=[32883]Project Opened.
+D1_L2=[32898]Project Closed.
+D1_L3=[32940]Project Opened.
+D1_L4=[32964]Started Editing.
+D1_L5=[33127]Stopped Editing.
+TotalEdit=24
+TotalDebug=0
+D1_E=13
+D1_D=0
+D1_L6=[33127]Project Closed.
+D1_L7=[33237]Project Opened.
+D1_L8=[33248]Started Editing.
+D1_L9=[33556]Stopped Editing.
+D1_L10=[37337]Started Editing.
+D1_L11=[37637]Stopped Editing.
+D1_L12=[43942]Project Closed.
+D1_L13=[45418]Project Opened.
+D1_L14=[46497]Started Editing.
+D1_L15=[46797]Stopped Editing.
+D1_L16=[47638]Started Editing.
+D1_L17=[47955]Stopped Editing.
+D1_L18=[48737]Started Editing.
+D1_L19=[49047]Stopped Editing.
+D1_L20=[51630]Started Editing.
+D1_L21=[51942]Stopped Editing.
+D1_L22=[52123]Started Editing.
+D1_L23=[52621]Stopped Editing.
+D1_L24=[52621]Project Closed.
+D2=27-04-2025
+D2_L=2
+D2_L1=[81958]Project Opened.
+D2_L2=[85059]Project Closed.
+D3=30-04-2025
+D3_L=2
+D3_L1=[1393]Project Opened.
+D3_L2=[1481]Project Closed.
+D4=02-05-2025
+D4_L=1
+D4_L1=[49483]Project Opened.
+D5=05-06-2025
+D5_L=3
+D5_L1=[70426]Project Opened.
+D5_L2=[71873]Started Editing.
+D5_L3=[72238]Stopped Editing.
+D6=06-06-2025
+D6_E=2
+D6_D=0
+D6_L=10
+D6_L1=[28117]Project Closed.
+D6_L2=[28417]Project Opened.
+D6_L3=[30529]Started Editing.
+D6_L4=[30837]Stopped Editing.
+D6_L5=[30998]Started Editing.
+D6_L6=[31359]Stopped Editing.
+D6_L7=[45524]Started Editing.
+D6_L8=[46013]Stopped Editing.
+D6_L9=[64218]Project Opened.
+D6_L10=[65118]Project Closed.
+D7=07-06-2025
+D7_L=8
+D7_L1=[45491]Project Opened.
+D7_L2=[45705]Started Editing.
+D7_L3=[45740]Stopped Editing.
+D7_E=9
+D7_D=0
+D7_L4=[45740]Project Closed.
+D7_L5=[45795]Project Opened.
+D7_L6=[45831]Started Editing.
+D7_L7=[46284]Stopped Editing.
+D7_L8=[46284]Project Closed.
+
+[Opened Files]
+1=main.c
+t1=1
+Count=1
+2=..\..\THIET KE MACH DGT - Chính\main.c
+t2=44
+[main.c]
+Type=4
+
+[defines]
+buildcount=34
+[Units]
+Count=1
+1=main (main)

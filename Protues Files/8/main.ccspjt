@@ -1,0 +1,60 @@
+[PROJECT]
+Target=main.hex
+Processor_Text=PIC16F877A
+CCSVerions=5.115
+Compiler=PCM
+CCSVersion=5.115
+[Target Data]
+FileList=main.c
+[Directories]
+Include=
+[C:\huuquyen_doan1_2025\main]
+Type=4
+[mru-list]
+1=main.c
+
+[fileformats]
+forcecoff=0
+
+[ProjectLog]
+Days=3
+D1=05-06-2025
+D1_L=6
+D1_L1=[31255]Project Opened.
+D1_L2=[31268]Started Editing.
+D1_L3=[31288]Stopped Editing.
+TotalEdit=2
+TotalDebug=0
+D1_E=1
+D1_D=0
+D1_L4=[31288]Project Closed.
+D1_L5=[31383]Project Opened.
+D1_L6=[31403]Project Closed.
+D2=07-06-2025
+D2_L=3
+D2_L1=[28360]Project Opened.
+D2_L2=[28383]Started Editing.
+D2_L3=[28683]Stopped Editing.
+D3=08-06-2025
+D3_L=6
+D3_L1=[41705]Project Opened.
+D3_L2=[41713]Started Editing.
+D3_L3=[42013]Stopped Editing.
+D3_E=1
+D3_D=0
+D3_L4=[44601]Project Closed.
+D3_L5=[51052]Project Opened.
+D3_L6=[51064]Project Closed.
+
+[Opened Files]
+1=main.c
+t1=21
+Count=1
+[main.c]
+Type=4
+
+[defines]
+buildcount=4
+[Units]
+Count=1
+1=main (main)

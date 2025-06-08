@@ -1,0 +1,126 @@
+#include <main.h>
+#include <16F877A>
+#device adc=10
+#fuses HS, NOWDT, NOPROTECT, NOLVP
+#use delay(clock=20000000)
+#use fast_io(B)
+#use fast_io(D)
+#use fast_io(E)
+
+// Ð?nh nghia chân LCD
+#define LCD_ENABLE_PIN PIN_B2
+#define LCD_RS_PIN PIN_B4
+#define LCD_RW_PIN PIN_B3
+#define LCD_DATA4 PIN_D7
+#define LCD_DATA5 PIN_D6
+#define LCD_DATA6 PIN_D5
+#define LCD_DATA7 PIN_D4
+#include <lcd.c>
+
+// Ð?nh nghia chân di?u khi?n
+#define mod PIN_E1
+#define tang PIN_E0
+#define giam PIN_E2
+#define rl PIN_D2
+
+
+// Bi?n toàn c?c
+int kq, ndlm35;
+int i, gh = 40;
+int1 tt = 1;
+
+void doc_lm35() {
+    kq = 0;
+    for(i = 0; i < 10; i++) {
+        kq += read_adc();
+        delay_ms(1);
+    }
+    ndlm35 = (kq * 500) / 1023; // T?i uu phép tính
+}
+
+void nn_mod() {
+    if(!input(mod)) {
+        delay_ms(20);
+        if(!input(mod)) {
+            tt = ~tt;
+            while(!input(mod)) delay_ms(1);
+        }
+    }
+}
+
+void nn_tang() {
+    if(!input(tang)) {
+        delay_ms(20);
+        if(!input(tang)) {
+            gh++;
+            if(gh > 99) gh = 99;
+            while(!input(tang)) delay_ms(1);
+        }
+    }
+}
+
+void nn_giam() {
+    if(!input(giam)) {
+        delay_ms(20);
+        if(!input(giam)) {
+            gh--;
+            if(gh < 1) gh = 0;
+            while(!input(giam)) delay_ms(1);
+        }
+    }
+}
+
+void hienthi() {
+    if(tt == 1) {
+        lcd_gotoxy(1,1);
+        printf(lcd_putc, "NHIET DO:%2u%cC ", ndlm35, 0xDF);
+        
+        lcd_gotoxy(1,2);
+        printf(lcd_putc, "GIOI HAN:%2u%cC", gh, 0xDF);
+    } else {
+        lcd_gotoxy(1,1);
+        lcd_putc(" CHINH GIOI HAN ");
+        lcd_gotoxy(1,2);
+        printf(lcd_putc, "    %2u%cC    ", gh, 0xDF);
+    }
+}
+
+void main() {
+    // C?u hình các PORT
+    set_tris_b(0x00);
+    set_tris_d(0x00);
+    set_tris_a(0xFF);
+    set_tris_e(0x07);
+    
+    output_low(LCD_RW_PIN); // N?u không dùng ch? d? d?c LCD
+
+    // Kh?i t?o ADC
+    setup_adc_ports(AN0);
+    setup_adc(ADC_CLOCK_INTERNAL);
+    set_adc_channel(0);
+
+    // Kh?i t?o LCD
+    lcd_init();
+
+    // Kh?i t?o các output
+    output_low(rl);
+  
+
+    while(TRUE) {
+        doc_lm35();
+        nn_mod();
+        nn_tang();
+        nn_giam();
+        hienthi();
+
+        if(ndlm35 > gh) {
+            output_high(rl);
+           
+            delay_ms(100);
+           
+        } else {
+            output_low(rl);
+            
+        }
+    }
+}
