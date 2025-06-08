@@ -1,0 +1,38 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define PIR      PIN_A0        // C?m bi?n ngu?i
+#define LED_XANH PIN_D2
+#define LED_DO   PIN_D3
+#define BTN_XANH PIN_B0        // Nh?n d? t?t LED xanh
+#define BTN_DO   PIN_B1        // Nh?n d? t?t LED d?
+
+void main() {
+   set_tris_a(0xFF);  // PIR là input
+   set_tris_b(0xFF);  // Nút nh?n là input
+   set_tris_d(0x00);  // LED là output
+
+   // T?t LED ban d?u
+   output_low(LED_XANH);
+   output_low(LED_DO);
+
+   while(TRUE) {
+      // Khi có ngu?i ? b?t c? 2 LED
+      if(input(PIR)) {
+         output_high(LED_XANH);
+         output_high(LED_DO);
+      }
+
+      // Nh?n nút RB0 ? t?t LED xanh
+      if(input(BTN_XANH) == 0) {
+         output_low(LED_XANH);
+      }
+
+      // Nh?n nút RB1 ? t?t LED d?
+      if(input(BTN_DO) == 0) {
+         output_low(LED_DO);
+      }
+   }
+}
+

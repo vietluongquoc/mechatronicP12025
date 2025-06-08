@@ -1,0 +1,56 @@
+#include <16F887.h>
+#fuses HS, NOWDT, NOPUT, NOLVP
+#use delay(clock=12000000)
+
+#define TRIG_PIN PIN_C0
+#define ECHO_PIN PIN_C1
+#define LED_PIN  PIN_D2
+
+// Hàm phát xung trigger cho HC-SR04
+void send_trigger() {
+   output_low(TRIG_PIN);
+   delay_us(2);
+   output_high(TRIG_PIN);
+   delay_us(10);
+   output_low(TRIG_PIN);
+}
+
+// Hàm do kho?ng cách (don v? cm)
+unsigned int16 read_distance_cm() {
+   unsigned int16 duration;
+   float distance_cm;
+
+   send_trigger();
+
+   // Ð?i Echo lên m?c cao
+   while(!input(ECHO_PIN));
+
+   // Ðo d? r?ng xung Echo (t?i da 30000us d? tránh treo)
+   duration = pulseIn(ECHO_PIN, 1, 30000); // CCS h? tr? pulseIn t? phiên b?n 5.x
+
+   // Tính kho?ng cách (t?c d? âm thanh 343m/s = 0.0343 cm/us)
+   // Kho?ng cách = (th?i gian xung Echo / 2) * 0.0343
+   distance_cm = (float)duration / 58.0;
+
+   return (unsigned int16)distance_cm;
+}
+
+void main() {
+   set_tris_c(0b00000010); // RC1 (ECHO) input, RC0 (TRIG) output
+   set_tris_d(0b00000000); // Port D output
+
+   output_low(LED_PIN);
+
+   while(true) {
+      unsigned int16 distance = read_distance_cm();
+
+      if(distance <= 10 && distance > 0) {
+         output_high(LED_PIN);
+      } else {
+         output_low(LED_PIN);
+      }
+
+      delay_ms(200); // Gi?m t?n su?t d?c d? tránh nhi?u
+   }
+}
+

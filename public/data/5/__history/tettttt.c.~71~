@@ -1,0 +1,89 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define PIR         PIN_A0
+#define LED_XANH    PIN_D2
+#define LED_DO      PIN_D3
+#define IN1         PIN_C0
+#define IN2         PIN_C1
+#define LIMIT_OPEN  PIN_B0  // pull-up, nh?n = 0
+#define LIMIT_CLOSE PIN_B1  // pull-up, nh?n = 0
+
+void motor_forward() {
+   output_high(IN1); output_low(IN2);
+}
+
+void motor_reverse() {
+   output_low(IN1); output_high(IN2);
+}
+
+void motor_stop() {
+   output_low(IN1); output_low(IN2);
+}
+
+void main() {
+   set_tris_a(0xFF);    // RA0 PIR
+   set_tris_b(0xFF);    // RB0/RB1 limit switches
+   set_tris_c(0x00);    // RC0/RC1 motor
+   set_tris_d(0x00);    // RD2/XANH, RD3/DO
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_stop();
+
+   while(TRUE) {
+     // 1. PHÁT HI?N NGU?I ? M? C?A
+     if(input(PIR) && input(LIMIT_OPEN)) {
+       output_high(LED_XANH);
+       output_high(LED_DO);
+       motor_forward();
+       // Quay cho t?i khi ch?m limit open
+       while(input(LIMIT_OPEN)) {
+         // n?u thình lình m?t PIR thì d?ng luôn
+         if(!input(PIR)) break;
+       }
+       motor_stop();
+       output_low(LED_DO);
+     }
+
+     // 2. PAUSE 2s (sau khi m? xong ho?c PIR m?t d?t ng?t)
+     if(!input(PIR) && !input(LIMIT_OPEN)) {
+       delay_ms(2000);
+     }
+
+     // 3. ÐÓNG C?A
+     if(!input(PIR) && input(LIMIT_CLOSE)) {
+       output_high(LED_DO);
+       motor_reverse();
+       // Quay cho t?i khi ch?m limit close
+       while(input(LIMIT_CLOSE)) {
+         // n?u có PIR b?t ch?t ? chuy?n pha m?
+         if(input(PIR)) {
+           motor_forward();
+           output_high(LED_XANH);
+           // m? d?n h?t
+           while(input(LIMIT_OPEN)) {
+             if(!input(PIR)) break;
+           }
+           motor_stop();
+           output_low(LED_DO);
+           output_low(LED_XANH);
+           // l?i pause tru?c khi dóng ti?p
+           delay_ms(2000);
+           output_high(LED_DO);
+           motor_reverse();
+           // r?i l?i ch? limit close
+           while(input(LIMIT_CLOSE)) {
+             if(input(PIR)) break;
+           }
+           break;
+         }
+       }
+       motor_stop();
+       output_low(LED_DO);
+       output_low(LED_XANH);
+     }
+   }
+}
+

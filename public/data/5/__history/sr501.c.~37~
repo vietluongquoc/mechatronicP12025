@@ -1,0 +1,111 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOPUT, NOLVP
+#use delay(clock=12000000)
+
+#define PIR        PIN_A0
+#define LED_XANH   PIN_D2
+#define LED_DO     PIN_D3
+#define IN1        PIN_C0
+#define IN2        PIN_C1
+#define ENA        PIN_C2
+#define LIMIT_MO   PIN_B0
+#define LIMIT_DONG PIN_B1
+
+// Hàm ch?ng rung cho input
+bit debounce_input(byte pin, int delay_ms) {
+   if (input(pin)) {
+      delay_ms(20); // Ch? d? xác nh?n tín hi?u ?n d?nh
+      if (input(pin)) return 1;
+   }
+   return 0;
+}
+
+void motor_mo_cham() {
+   output_high(IN1);
+   output_low(IN2);
+   setup_ccp1(CCP_PWM);
+   set_pwm1_duty((int16)128); // Duty cycle 50%
+}
+
+void motor_dong_cham() {
+   output_low(IN1);
+   output_high(IN2);
+   setup_ccp1(CCP_PWM);
+   set_pwm1_duty((int16)128); // Duty cycle 50%
+}
+
+void motor_dung() {
+   output_low(IN1);
+   output_low(IN2);
+   setup_ccp1(CCP_OFF); // T?t PWM
+   output_low(ENA);      // Ð?m b?o ENA ? m?c th?p
+}
+
+void den_do_nhap_nhay() {
+   for(int i = 0; i < 4; i++) {
+      output_toggle(LED_DO);
+      delay_ms(500);
+   }
+   output_low(LED_DO);
+}
+
+void main() {
+   set_tris_a(0xFF); // RA0 input
+   set_tris_b(0xFF); // RB0, RB1 input
+   set_tris_c(0x00); // Motor
+   set_tris_d(0x00); // LEDs
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_dung();
+
+   // C?u hình PWM v?i t?n s? ~1kHz
+   setup_timer_2(T2_DIV_BY_4, 249, 1); // PR2 = 249, t?n s? PWM = 1kHz
+   setup_ccp1(CCP_OFF); // Ban d?u t?t PWM
+
+   while(TRUE) {
+      // Ki?m tra PIR v?i ch?ng rung
+      if (debounce_input(PIR, 20)) {
+         output_high(LED_XANH);
+         output_high(LED_DO);
+         motor_mo_cham();
+
+         // Ch? t?i khi ch?m LIMIT_MO ho?c m?t tín hi?u PIR
+         while (!debounce_input(LIMIT_MO, 20)) {
+            if (!debounce_input(PIR, 20)) break;
+         }
+
+         motor_dung();
+         output_low(LED_DO);
+         output_low(LED_XANH);
+
+         // Ch? 5 giây
+         delay_ms(5000);
+
+         // Nh?p nháy dèn d? tru?c khi quay ngh?ch
+         den_do_nhap_nhay();
+
+         // Quay ngh?ch
+         output_high(LED_DO);
+         motor_dong_cham();
+
+         // Ki?m tra LIMIT_DONG ho?c tín hi?u PIR
+         while (!debounce_input(LIMIT_DONG, 20)) {
+            if (debounce_input(PIR, 20)) {
+               // Có ngu?i trong lúc quay ngh?ch
+               motor_dung();
+               delay_ms(200);
+               output_high(LED_XANH);
+               output_high(LED_DO);
+               motor_mo_cham();
+               while (!debounce_input(LIMIT_MO, 20) && debounce_input(PIR, 20));
+               break;
+            }
+         }
+
+         motor_dung();
+         output_low(LED_DO);
+         output_low(LED_XANH);
+      }
+   }
+}

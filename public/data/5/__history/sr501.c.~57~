@@ -1,0 +1,84 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define PIR       PIN_A0
+#define LED_XANH  PIN_D2
+#define LED_DO    PIN_D3
+#define IN1       PIN_C0
+#define IN2       PIN_C1
+
+void motor_forward() {
+   output_high(IN1);
+   output_low(IN2);
+}
+
+void motor_reverse() {
+   output_low(IN1);
+   output_high(IN2);
+}
+
+void motor_stop() {
+   output_low(IN1);
+   output_low(IN2);
+}
+
+void blink_led_do(int time_ms) {
+   int count = time_ms / 200; // M?i l?n nh?p nháy 200ms
+   for(int i = 0; i < count; i++) {
+      output_toggle(LED_DO);
+      delay_ms(200);
+   }
+   output_low(LED_DO);
+}
+
+void main() {
+   set_tris_a(0xFF); // PIR là input
+   set_tris_c(0x00); // Motor
+   set_tris_d(0x00); // LED
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_stop();
+
+   while(TRUE) {
+      if(input(PIR)) {
+         // Giai do?n m? c?a
+         output_high(LED_XANH); // Có ngu?i
+         output_high(LED_DO);   // Motor dang ch?y
+         motor_forward();
+         delay_ms(1000);
+         motor_stop();
+         output_low(LED_DO);
+
+         // Giai do?n ch?
+         delay_ms(2000);
+
+         // Nh?p nháy dèn d? c?nh báo s?p dóng
+         blink_led_do(2000); // 2 giây
+
+         // Giai do?n dóng c?a
+         output_high(LED_DO);
+         motor_reverse();
+
+         for(int i = 0; i < 30; i++) { // Quay ngu?c trong t?i da 3s
+            delay_ms(100);
+            if(input(PIR)) {
+               // N?u phát hi?n ngu?i trong khi quay ngu?c
+               motor_forward();
+               output_high(LED_XANH);
+               delay_ms(1000);
+               motor_stop();
+               output_low(LED_DO);
+               output_low(LED_XANH);
+               break;
+            }
+         }
+
+         motor_stop();
+         output_low(LED_DO);
+         output_low(LED_XANH);
+      }
+   }
+}
+

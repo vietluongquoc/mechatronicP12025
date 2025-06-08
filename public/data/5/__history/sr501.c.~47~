@@ -1,0 +1,83 @@
+#include <16F887.h>
+#fuses INTRC_IO, NOWDT, NOMCLR
+#use delay(clock=8000000)
+
+#define SENSOR_PIN     PIN_A0   // OUT t? c?m bi?n HC-SR501
+#define LIMIT_OPEN     PIN_A1   // Công t?c hành trình m? c?a
+#define LED_GREEN      PIN_D2   // LED xanh báo có ngu?i
+#define LED_RED        PIN_D3   // LED d? báo d?ng co dang quay
+#define MOTOR_IN1      PIN_C0   // Quay thu?n
+#define MOTOR_IN2      PIN_C1   // Quay ngh?ch
+
+void stop_motor() {
+   output_low(MOTOR_IN1);
+   output_low(MOTOR_IN2);
+}
+
+void open_door() {
+   output_high(MOTOR_IN1);
+   output_low(MOTOR_IN2);
+}
+
+void close_door() {
+   output_low(MOTOR_IN1);
+   output_high(MOTOR_IN2);
+}
+
+void main() {
+   set_tris_a(0xFF); // RA0, RA1 là input
+   set_tris_c(0x00); // RC0, RC1 là output
+   set_tris_d(0x00); // LED ? RD2, RD3
+
+   output_low(LED_GREEN);
+   output_low(LED_RED);
+   stop_motor();
+
+   int1 is_closing = 0;
+   int1 motor_running = 0;
+
+   while (true) {
+      if (input(SENSOR_PIN) && !motor_running) {
+         // Phát hi?n ngu?i -> m? c?a
+         output_high(LED_GREEN);
+         output_high(LED_RED);
+         open_door();
+         motor_running = 1;
+         is_closing = 0;
+      }
+
+      // C?a dã m? h?t -> công t?c hành trình m? du?c nh?n
+      if (motor_running && input(LIMIT_OPEN) && !is_closing) {
+         stop_motor();
+         output_low(LED_RED);
+         output_low(LED_GREEN);
+         motor_running = 0;
+
+         // Ch? 5 giây
+         delay_ms(3000); // 3s dèn d? sáng
+         output_high(LED_RED);
+         delay_ms(3000);
+         output_low(LED_RED);
+
+         // Nh?p nháy dèn d? 2s
+         for (int i = 0; i < 4; i++) {
+            output_toggle(LED_RED);
+            delay_ms(250);
+         }
+
+         // Quay ngh?ch (dóng c?a)
+         close_door();
+         output_high(LED_RED);
+         motor_running = 1;
+         is_closing = 1;
+      }
+
+      // N?u dang dóng mà phát hi?n ngu?i
+      if (is_closing && input(SENSOR_PIN)) {
+         // Ð?o ngu?c l?i m? c?a
+         open_door();
+         is_closing = 0;
+      }
+   }
+}
+

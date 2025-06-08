@@ -1,0 +1,84 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define PIR          PIN_A0
+#define LIMIT_OPEN   PIN_D4  // Công t?c hành trình khi c?a m? hoàn toàn
+#define LIMIT_CLOSE  PIN_D5  // Công t?c hành trình khi c?a dóng hoàn toàn
+#define LED_XANH     PIN_D2
+#define LED_DO       PIN_D3
+#define IN1          PIN_C0
+#define IN2          PIN_C1
+
+// Function prototype for motor_stop
+void motor_stop(void);
+
+void motor_forward() {
+   output_high(IN1);
+   output_low(IN2);
+   while(!input(LIMIT_OPEN)) { // Ch?y d?ng co cho d?n khi ch?m công t?c m?
+      // Có th? thêm ki?m tra an toàn ho?c thoát vòng l?p n?u c?n
+   }
+   motor_stop();
+}
+
+void motor_reverse() {
+   output_low(IN1);
+   output_high(IN2);
+   while(!input(LIMIT_CLOSE)) { // Ch?y d?ng co cho d?n khi ch?m công t?c dóng
+      if(input(PIR)) { // Ki?m tra PIR trong khi dóng
+         break; // N?u phát hi?n ngu?i, thoát d? x? lý m? l?i
+      }
+   }
+   motor_stop();
+}
+
+void motor_stop() {
+   output_low(IN1);
+   output_low(IN2);
+}
+
+void main() {
+   set_tris_a(0xFF); // PIR là input
+   set_tris_c(0x00); // Motor output
+   set_tris_d(0x30); // PIN_D4, PIN_D5 là input (00110000), các chân khác là output
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_stop();
+
+   while(TRUE) {
+      if(input(PIR)) {
+         // Giai do?n m? c?a
+         output_high(LED_XANH);
+         output_high(LED_DO);
+         motor_forward(); // D?ng khi ch?m LIMIT_OPEN
+         output_low(LED_DO);
+
+         // Ch? 2s
+         delay_ms(2000);
+
+         // C?nh báo s?p dóng
+         output_high(LED_DO);
+
+         // B?t d?u dóng c?a
+         motor_reverse(); // D?ng khi ch?m LIMIT_CLOSE ho?c phát hi?n ngu?i
+
+         if(input(PIR)) { // N?u phát hi?n ngu?i khi dang dóng
+            // M? l?i c?a
+            output_high(LED_XANH);
+            output_high(LED_DO);
+            motor_forward(); // D?ng khi ch?m LIMIT_OPEN
+            output_low(LED_DO);
+            output_low(LED_XANH);
+
+            // Sau khi m? l?i thì v?n ph?i dóng ti?p
+            delay_ms(2000);
+            output_high(LED_DO);
+            motor_reverse(); // D?ng khi ch?m LIMIT_CLOSE
+            output_low(LED_DO);
+         }
+         output_low(LED_XANH);
+      }
+   }
+}

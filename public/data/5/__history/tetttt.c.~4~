@@ -1,0 +1,14 @@
+#include <18F4550.h>
+#fuses HS,NOWDT,NOLVP,NOPUT
+#use delay(clock=12000000)  // N?u dùng th?ch anh 8MHz
+
+void main() {
+   set_tris_d(0xFE); // RD0 output (0), còn l?i input (1)
+   output_low(PIN_D2); // T?t LED ban d?u
+
+   while(true) {
+      output_toggle(PIN_D0); // Ð?o tr?ng thái LED
+      delay_ms(500);         // Ch? 500ms
+   }
+}
+

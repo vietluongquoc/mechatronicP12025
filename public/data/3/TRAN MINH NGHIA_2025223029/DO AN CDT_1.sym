@@ -1,0 +1,140 @@
+004-005 @WRITE_PROGRAM_MEMORY8.P1
+004-005 @READ_PROGRAM_MEMORY8.P2
+007.0   DHT_DATA_IN
+007.0   DHT_DATA_OUT
+008     PSP_DATA
+015     CCP_1
+015     CCP_1_LOW
+016     CCP_1_HIGH
+01B     CCP_2
+01B     CCP_2_LOW
+01C     CCP_2_HIGH
+020     nd
+021     nd1
+022     da
+023     da1
+024-027 gh
+028-029 @sprintf_string
+02A     @TRIS_C
+02B-02F DHT_GetTemHumi.buffer
+02B     @DIV88.P1
+02B     lcd_init.i
+02B     phim_up.@SCRATCH1
+02B     phim_dw.@SCRATCH1
+02B     doc_dht.@SCRATCH1
+02B     @PSTRINGC7_724.@SCRATCH1
+02B     MAIN.@SCRATCH1
+02C     @DIV88.P1
+02C-02F lcd_init.LCD_INIT_STRING
+02C     @PSTRINGC7_724.@SCRATCH2
+02C     MAIN.@SCRATCH2
+02D     @PSTRINGC7_724.@SCRATCH3
+02D     @DIV88.@SCRATCH1
+02D     MAIN.@SCRATCH3
+02E     @PSTRINGC7_724.@SCRATCH4
+02E     MAIN.@SCRATCH4
+02F-032 @DIV3232.P1
+02F     MAIN.@SCRATCH5
+030     DHT_GetTemHumi.ii
+030     lcd_init.@SCRATCH1
+030     MAIN.@SCRATCH6
+031     DHT_GetTemHumi.i
+031     MAIN.@SCRATCH7
+032     DHT_GetTemHumi.checksum
+032     MAIN.@SCRATCH8
+033     lcd_putc.c
+033-036 @DIV3232.P1
+033     DHT_GetTemHumi.@SCRATCH1
+034     lcd_gotoxy.x
+034     DHT_GetTemHumi.@SCRATCH2
+035     lcd_gotoxy.y
+035     DHT_GetTemHumi.@SCRATCH3
+036     lcd_gotoxy.address
+037     lcd_gotoxy.@SCRATCH1
+037     @DIV3232.@SCRATCH1
+038     lcd_send_byte.address
+038     @DIV3232.@SCRATCH2
+039     lcd_send_byte.n
+039     @DIV3232.@SCRATCH3
+03A     lcd_read_byte.low
+03A     lcd_send_byte.@SCRATCH1
+03A     @DIV3232.@SCRATCH4
+03B     lcd_read_byte.high
+03B     lcd_send_nibble.n
+03B     @delay_ms1.P1
+03B     @DIV3232.@SCRATCH5
+03C     lcd_read_nibble.n
+03C     lcd_read_byte.@SCRATCH1
+03D     lcd_read_nibble.@SCRATCH1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+087.0   DHT_DDR_DATA
+09C.6   C1OUT
+09C.7   C2OUT
+10D-10E @READ_PROGRAM_MEMORY8.P1
+10D-10E @WRITE_PROGRAM_MEMORY8.P2
+
+ROM Allocation:
+000004  @const756.call
+000006  @const764.call
+000008  @const765.call
+00000A  @const766.call
+00000B  @const770.call
+000010  @const774.call
+000012  @delay_ms1
+000026  lcd_send_nibble
+000054  lcd_read_nibble
+000085  lcd_send_byte
+00008D  lcd_read_byte
+0000E3  lcd_init
+000129  lcd_gotoxy
+00013B  lcd_putc
+000167  @PSTRINGC7_724
+0001BD  @DIV88
+0001D2  DHT_GetTemHumi
+0001D2  doc_dht
+000299  phim_up
+0002C6  phim_dw
+0002F3  @DIV3232
+000342  @cinit1
+000342  MAIN
+000350  @cinit2
+
+Project Directory:
+    C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\
+
+Project Files:
+    DO AN CDT_1.c                                           [08-Thg6-25 19:12  CRC=1D27B792]
+    ..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877a.h [06-Thg5-22 15:52  CRC=4E256CC5]
+    ..\..\..\..\..\Program Files (x86)\PICC\Drivers\lcd.c   [22-Thg2-16 10:05  CRC=D1A6378A]
+
+Source signature=0E99936B
+Program memory checksum=0000
+Hex file CRC=BD8B
+
+Units:
+    C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1 (main)
+
+Compiler Settings:
+    Processor:      PIC16F877A
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:   CCS5
+
+Output Files:
+    XREF file:   DO AN CDT_1.xsym
+    Errors:      DO AN CDT_1.err
+    Ext Symbols: DO AN CDT_1.esym
+    INHX8:       DO AN CDT_1.hex
+    Symbols:     DO AN CDT_1.sym
+    List:        DO AN CDT_1.lst
+    Debug/COFF:  DO AN CDT_1.cof
+    Project:     DO AN CDT_1.ccspjt
+    Call Tree:   DO AN CDT_1.tre
+    Statistics:  DO AN CDT_1.STA

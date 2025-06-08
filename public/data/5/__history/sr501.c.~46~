@@ -1,0 +1,65 @@
+#include <16F887.h>
+#fuses INTRC_IO, NOWDT
+#use delay(clock=8000000)
+
+#define MOTOR_IN1     PIN_C0  // Quay thu?n
+#define MOTOR_IN2     PIN_C1  // Quay ngh?ch
+#define SENSOR_PIN    PIN_A0  // OUT c?a c?m bi?n HC-SR501
+#define LIMIT_OPEN    PIN_A1  // Công t?c hành trình m?
+#define LED_GREEN     PIN_D2  // LED xanh
+#define LED_RED       PIN_D3  // LED d?
+
+void main() {
+   set_tris_a(0xFF); // PORTA là input (RA0: c?m bi?n, RA1: công t?c)
+   set_tris_c(0x00); // PORTC là output (di?u khi?n motor)
+   set_tris_d(0x00); // PORTD là output (LED)
+
+   int1 motor_running = 0;
+   int1 closing = 0;
+
+   while(true) {
+      if (input(SENSOR_PIN) && !motor_running) {
+         // Có ngu?i và motor chua ch?y
+         output_high(LED_GREEN);      // B?t dèn xanh
+         output_high(LED_RED);        // B?t dèn d? (motor ho?t d?ng)
+         output_high(MOTOR_IN1);      // Quay thu?n
+         output_low(MOTOR_IN2);
+         motor_running = 1;
+         closing = 0;
+      }
+
+      // N?u dã ch?y và công t?c hành trình m? du?c nh?n
+      if (motor_running && !input(LIMIT_OPEN) && closing == 0) {
+         // Ng?ng motor
+         output_low(MOTOR_IN1);
+         output_low(MOTOR_IN2);
+         output_low(LED_RED);
+         output_low(LED_GREEN);
+         motor_running = 0;
+
+         delay_ms(5000); // Ch? 5 giây tru?c khi dóng c?a
+
+         // Nh?p nháy dèn d? c?nh báo
+         for (int i = 0; i < 10; i++) {
+            output_toggle(LED_RED);
+            delay_ms(200);
+         }
+
+         // B?t d?u quay ngh?ch d? dóng c?a
+         output_high(LED_RED);    // Ðèn d? sáng khi motor ho?t d?ng
+         output_low(MOTOR_IN1);
+         output_high(MOTOR_IN2);
+         motor_running = 1;
+         closing = 1;
+      }
+
+      // N?u dang dóng (quay ngh?ch) mà c?m bi?n phát hi?n ngu?i
+      if (closing == 1 && input(SENSOR_PIN)) {
+         // Ð?o l?i quay thu?n
+         output_high(MOTOR_IN1);
+         output_low(MOTOR_IN2);
+         closing = 0;
+      }
+   }
+}
+

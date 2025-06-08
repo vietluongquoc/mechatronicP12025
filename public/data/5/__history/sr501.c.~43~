@@ -1,0 +1,34 @@
+#include <16F887.h>
+#fuses INTRC_IO, NOWDT
+#use delay(clock=8000000)
+
+#define MOTOR_1_IN1  PIN_A1
+#define MOTOR_1_IN2  PIN_A2
+
+void main() {
+   // C?u hình các chân di?u khi?n là Output
+   set_tris_a(0xFC);  // RA0 là input, RA1, RA2 là output
+
+   while(true) {
+      // Quay d?ng co theo chi?u thu?n
+      output_high(MOTOR_1_IN1);
+      output_low(MOTOR_1_IN2);
+      delay_ms(2000); // Quay 2 giây
+
+      // D?ng d?ng co
+      output_low(MOTOR_1_IN1);
+      output_low(MOTOR_1_IN2);
+      delay_ms(1000); // D?ng 1 giây
+
+      // Quay d?ng co theo chi?u ngu?c l?i
+      output_low(MOTOR_1_IN1);
+      output_high(MOTOR_1_IN2);
+      delay_ms(2000); // Quay 2 giây
+
+      // D?ng d?ng co
+      output_low(MOTOR_1_IN1);
+      output_low(MOTOR_1_IN2);
+      delay_ms(1000); // D?ng 1 giây
+   }
+}
+

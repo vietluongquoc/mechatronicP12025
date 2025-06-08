@@ -1,0 +1,144 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+// Ð?nh nghia chân
+#define PIR         PIN_A1
+#define nut_mo      PIN_A2
+#define nut_dong    PIN_A4
+#define nut_chedo   PIN_A3
+#define LED_XANH    PIN_D2
+#define LED_DO      PIN_D3
+#define IN1         PIN_C0
+#define IN2         PIN_C1
+#define LIMIT_OPEN  PIN_B0
+#define LIMIT_CLOSE PIN_B1
+
+// Bi?n di?u khi?n ch? d?
+int1 chedo_tay = 0;
+int1 nut_chedo_truoc = 1;
+
+void motor_forward() {
+   output_high(IN1);
+   output_low(IN2);
+}
+
+void motor_reverse() {
+   output_low(IN1);
+   output_high(IN2);
+}
+
+void motor_stop() {
+   output_low(IN1);
+   output_low(IN2);
+}
+
+void main() {
+   set_tris_a(0xFF);
+   set_tris_b(0xFF);
+   set_tris_c(0x00);
+   set_tris_d(0x00);
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_stop();
+
+   while(TRUE) {
+      // Ki?m tra chuy?n d?i ch? d?
+      if(input(nut_chedo) == 0 && nut_chedo_truoc == 1) {
+         chedo_tay = !chedo_tay;
+         delay_ms(200); // ch?ng d?i
+      }
+      nut_chedo_truoc = input(nut_chedo);
+
+      if(chedo_tay) {
+         // Ch? d? di?u khi?n tay
+         if(input(nut_mo) == 0) {
+            if(input(LIMIT_OPEN)) {
+               motor_forward();
+               output_high(LED_DO);
+               output_low(LED_XANH);
+            } else {
+               motor_stop();
+               output_low(LED_DO);
+               output_low(LED_XANH);
+            }
+         }
+         else if(input(nut_dong) == 0) {
+            if(input(LIMIT_CLOSE)) {
+               motor_reverse();
+               output_high(LED_DO);
+               output_low(LED_XANH);
+            } else {
+               motor_stop();
+               output_low(LED_DO);
+               output_low(LED_XANH);
+            }
+         }
+         else {
+            motor_stop();
+            output_low(LED_DO);
+            output_low(LED_XANH);
+         }
+      }
+      else {
+         // Ch? d? c?m bi?n
+         if(input(PIR)) {
+            if(input(LIMIT_OPEN)) {
+               output_high(LED_XANH);
+               delay_ms(200);
+               output_high(LED_DO);
+               motor_forward();
+               output_low(LED_XANH);
+
+               while(input(LIMIT_OPEN)) {
+                  if(!input(LIMIT_OPEN)) break;
+                  if(input(nut_chedo) == 0 && nut_chedo_truoc == 1) goto ket_thuc;
+               }
+               motor_stop();
+               output_low(LED_DO);
+            }
+
+            delay_ms(2000); // ch? 2s
+
+            // Ðóng c?a n?u chua dóng
+            dong_cua:
+            if(input(LIMIT_CLOSE)) {
+               output_high(LED_DO);
+               motor_reverse();
+
+               while(input(LIMIT_CLOSE)) {
+                  if(input(PIR)) {
+                     if(input(LIMIT_OPEN)) {
+                        output_high(LED_XANH);
+                        delay_ms(200);
+                        output_low(LED_XANH);
+                        motor_forward();
+                        while(input(LIMIT_OPEN)) {
+                           if(!input(LIMIT_OPEN)) break;
+                           if(input(nut_chedo) == 0 && nut_chedo_truoc == 1) goto ket_thuc;
+                        }
+                        motor_stop();
+                        output_low(LED_DO);
+                        output_low(LED_XANH);
+                     }
+
+                     delay_ms(2000);
+                     goto dong_cua;
+                  }
+
+                  if(input(nut_chedo) == 0 && nut_chedo_truoc == 1) goto ket_thuc;
+               }
+
+               motor_stop();
+               output_low(LED_DO);
+            }
+
+            output_low(LED_XANH);
+         }
+      }
+      ket_thuc:
+         nut_chedo_truoc = input(nut_chedo);
+   }
+}
+

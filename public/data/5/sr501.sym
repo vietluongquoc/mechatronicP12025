@@ -1,0 +1,73 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+004-005 @WRITE_PROGRAM_MEMORY8.P2
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01B     CCP_2_LOW
+01B     CCP_2
+01C     CCP_2_HIGH
+020     chedotay
+021     chedobantudong
+022     trangthaitruoc
+023     modangchay
+024     dongdangchay
+025     @TRIS_C
+026     chuyenchedo.@SCRATCH1
+026     MAIN.@SCRATCH1
+027     @delay_ms1.P1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+107.6   C1OUT
+108.6   C2OUT
+10D-10E @READ_PROGRAM_MEMORY8.P1
+10D-10E @WRITE_PROGRAM_MEMORY8.P2
+
+ROM Allocation:
+000004  dung
+000011  @delay_ms1
+000026  chuyenchedo
+000050  quaythuan
+00005D  quaynguoc
+00006A  MAIN
+00006A  @cinit1
+000084  @cinit2
+016F  dongcua
+
+Project Directory:
+    C:\Users\Victus\Desktop\tett\
+
+Project Files:
+    sr501.c                                                 [06-Thg6-25 23:19  CRC=5495B574]
+    ..\..\..\..\Program Files (x86)\PICC\Devices\16F887.h   [22-Thg10-15 10:30  CRC=E224733F]
+
+Source signature=18DE9BF2
+Program memory checksum=0000
+Program memory CRC=0000
+Hex file CRC=A9F3
+
+Units:
+    sr501 (main)
+
+Compiler Settings:
+    Processor:      PIC16F887
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:       CCS5
+
+Output Files:
+    XREF file:   sr501.xsym
+    Errors:      sr501.err
+    Ext Symbols: sr501.esym
+    INHX8:       sr501.hex
+    Symbols:     sr501.sym
+    List:        sr501.lst
+    Debug/COFF:  sr501.cof
+    Project:     sr501.ccspjt
+    Call Tree:   sr501.tre
+    Statistics:  sr501.STA

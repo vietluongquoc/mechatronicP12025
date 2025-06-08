@@ -1,0 +1,41 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define LED_XANH  PIN_D2
+#define LED_DO    PIN_D3
+#define NUT_XANH  PIN_B0
+#define NUT_DO    PIN_B1
+
+void main() {
+   set_tris_b(0xFF);  // RB0, RB1 là input
+   set_tris_d(0x00);  // RD2, RD3 là output
+   output_low(LED_XANH);
+   output_low(LED_DO);
+
+   int state_xanh = 0, state_do = 0;
+   int prev_nut_xanh = 1, prev_nut_do = 1;
+
+   while(TRUE) {
+      int curr_xanh = input(NUT_XANH);
+      int curr_do = input(NUT_DO);
+
+      // Nút LED xanh
+      if(curr_xanh == 0 && prev_nut_xanh == 1) {
+         state_xanh = !state_xanh;
+         output_bit(LED_XANH, state_xanh);
+         delay_ms(200); // ch?ng d?i
+      }
+
+      // Nút LED d?
+      if(curr_do == 0 && prev_nut_do == 1) {
+         state_do = !state_do;
+         output_bit(LED_DO, state_do);
+         delay_ms(200); // ch?ng d?i
+      }
+
+      prev_nut_xanh = curr_xanh;
+      prev_nut_do = curr_do;
+   }
+}
+

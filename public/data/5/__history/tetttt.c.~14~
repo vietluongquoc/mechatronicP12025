@@ -1,0 +1,24 @@
+#include <16F887.h>
+#fuses HS, NOWDT, NOPUT, NOMCLR
+#use delay(clock=12000000) // Th?ch anh 12MHz
+
+void main() {
+   // C?u hình t?t c? PORT thành output
+   set_tris_a(0x00);
+   set_tris_b(0x00);
+   set_tris_c(0x00);
+   set_tris_d(0x00);
+   set_tris_e(0x00);
+
+   // Xu?t m?c cao lên t?t c? các PORT
+   output_a(0xFF);
+   output_b(0xFF);
+   output_c(0xFF);
+   output_d(0xFF);
+   output_e(0xFF);
+
+   while(true) {
+      // Vòng l?p vô h?n (gi? m?c cao)
+   }
+}
+

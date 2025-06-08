@@ -1,0 +1,140 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define PIR         PIN_A0
+#define BTN_STOP    PIN_A1
+#define BTN_OPEN    PIN_A2
+#define BTN_CLOSE   PIN_A3
+
+#define LED_XANH    PIN_D2
+#define LED_DO      PIN_D3
+
+#define IN1         PIN_C0
+#define IN2         PIN_C1
+
+#define LIMIT_OPEN  PIN_B0
+#define LIMIT_CLOSE PIN_B1
+
+void motor_forward() {
+   output_high(IN1);
+   output_low(IN2);
+}
+
+void motor_reverse() {
+   output_low(IN1);
+   output_high(IN2);
+}
+
+void motor_stop() {
+   output_low(IN1);
+   output_low(IN2);
+}
+
+void wait_until_opened() {
+   while(input(LIMIT_OPEN));
+   motor_stop();
+}
+
+void wait_until_closed() {
+   while(input(LIMIT_CLOSE));
+   motor_stop();
+}
+
+void main() {
+   set_tris_a(0xFF); // PIR và nút nh?n là input
+   set_tris_b(0xFF); // Công t?c hành trình input
+   set_tris_c(0x00); // Motor output
+   set_tris_d(0x00); // LED output
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_stop();
+
+   while(TRUE) {
+      // === X? LÝ NÚT D?NG ===
+      if(input(BTN_STOP) == 0) {
+         motor_stop();
+         output_low(LED_XANH);
+         output_low(LED_DO);
+         continue;
+      }
+
+      // === X? LÝ NÚT M? ===
+      if(input(BTN_OPEN) == 0) {
+         if(input(LIMIT_OPEN)) {
+            output_high(LED_XANH);
+            motor_forward();
+            wait_until_opened();
+            output_low(LED_XANH);
+         }
+         continue;
+      }
+
+      // === X? LÝ NÚT ÐÓNG ===
+      if(input(BTN_CLOSE) == 0) {
+         if(input(LIMIT_CLOSE)) {
+            output_high(LED_DO);
+            motor_reverse();
+            wait_until_closed();
+            output_low(LED_DO);
+         }
+         continue;
+      }
+
+      // === T? Ð?NG PHÁT HI?N NGU?I ===
+      if(input(PIR)) {
+         // M? C?A
+         if(input(LIMIT_OPEN)) {
+            output_high(LED_XANH);
+            output_high(LED_DO);
+            motor_forward();
+            wait_until_opened();
+            output_low(LED_DO);
+         }
+
+         delay_ms(2000); // ch? 2s
+
+         // ÐÓNG C?A
+         if(input(LIMIT_CLOSE)) {
+            output_high(LED_DO);
+            motor_reverse();
+
+            int nguoi_phat_hien = 0;
+            while(input(LIMIT_CLOSE)) {
+               if(input(PIR)) {
+                  nguoi_phat_hien = 1;
+                  break;
+               }
+            }
+            motor_stop();
+            output_low(LED_DO);
+
+            if(nguoi_phat_hien) {
+               // M? L?I
+               if(input(LIMIT_OPEN)) {
+                  output_high(LED_XANH);
+                  output_high(LED_DO);
+                  motor_forward();
+                  wait_until_opened();
+                  output_low(LED_DO);
+                  output_low(LED_XANH);
+               }
+
+               delay_ms(2000);
+
+               // ÐÓNG L?I
+               if(input(LIMIT_CLOSE)) {
+                  output_high(LED_DO);
+                  motor_reverse();
+                  wait_until_closed();
+                  output_low(LED_DO);
+               }
+            }
+
+            output_low(LED_XANH);
+         }
+      }
+   }
+}
+

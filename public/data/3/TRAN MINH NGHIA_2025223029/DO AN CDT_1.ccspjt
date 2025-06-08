@@ -1,0 +1,81 @@
+[PROJECT]
+Target=DO AN CDT_1.hex
+Processor_Text=PIC16F877A
+CCSVersion=5.109
+Compiler=PCM
+[Target Data]
+FileList=DO AN CDT_1.c
+[DO AN CDT_1.c]
+Type=4
+[mru-list]
+1=DO AN CDT_1.c
+
+[defines]
+buildcount=3
+
+[ProjectLog]
+Days=2
+D1=07-06-2025
+D1_L=2
+D1_L1=[86081]Stopped Editing.
+TotalEdit=7
+TotalDebug=0
+D1_E=2
+D1_D=0
+D1_L2=[86081]Project Closed.
+D2=08-06-2025
+D2_L=25
+D2_L1=[35]Project Opened.
+D2_L2=[131]Project Closed.
+D2_L3=[68983]Project Opened.
+D2_L4=[69039]Started Editing.
+D2_L5=[69221]Stopped Editing.
+D2_E=5
+D2_D=0
+D2_L6=[69221]Project Closed.
+D2_L7=[69221]Project Opened.
+D2_L8=[69222]Project Closed.
+D2_L9=[69222]Project Opened.
+D2_L10=[69232]Project Closed.
+D2_L11=[69803]Project Closed.
+D2_L12=[69803]Project Opened.
+D2_L13=[69806]Project Closed.
+D2_L14=[69806]Project Opened.
+D2_L15=[69815]Project Closed.
+D2_L16=[69828]Project Closed.
+D2_L17=[69828]Project Opened.
+D2_L18=[69829]Project Closed.
+D2_L19=[69829]Project Opened.
+D2_L20=[69840]Started Editing.
+D2_L21=[69887]Stopped Editing.
+D2_L22=[69888]Project Closed.
+D2_L23=[71119]Project Opened.
+D2_L24=[71680]Project Opened.
+D2_L25=[71963]Project Closed.
+
+[Opened Files]
+1=DO AN CDT_1.c
+t1=1
+Count=1
+2=C:\Program Files (x86)\PICC\Drivers\lcd.c
+t2=1
+3=C:\Program Files (x86)\PICC\Devices\16f877a.h
+t3=1
+4=C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1.lst
+t4=1
+5=C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1.sym
+t5=1
+6=C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1.hex
+t6=1
+7=C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1.esym
+t7=1
+8=C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1.err
+t8=1
+9=C:\Users\minhn\OneDrive\Desktop\TRAN MINH NGHIA_2025223029\DO AN CDT_1.xsym
+t9=1
+
+[fileformats]
+forcecoff=0
+[Units]
+Count=1
+1=DO AN CDT_1 (main)

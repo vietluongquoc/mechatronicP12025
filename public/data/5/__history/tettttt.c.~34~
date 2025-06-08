@@ -1,0 +1,22 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOPUT, NOLVP
+#use delay(clock=12000000)
+
+#define SERVO PIN_C2
+
+void servo_write(int angle) {
+   int pulse_width = 500 + ((int32)angle * 2000 / 180);
+   output_high(SERVO);
+   delay_us(pulse_width);
+   output_low(SERVO);
+   delay_ms(20 - pulse_width / 1000);
+}
+
+void main() {
+   set_tris_c(0x00);
+
+   while(true) {
+      servo_write(90);  // Gi? c? d?nh ? 90 d?
+   }
+}
+

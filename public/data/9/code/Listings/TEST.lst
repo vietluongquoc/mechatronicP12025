@@ -1,0 +1,204 @@
+C51 COMPILER V9.60.7.0   TEST                                                              06/06/2025 00:12:36 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TEST
+OBJECT MODULE PLACED IN .\Objects\TEST.obj
+COMPILER INVOKED BY: C:\Program Files (x86)\C51\BIN\C51.EXE TEST.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\L
+                    -istings\TEST.lst) TABS(2) OBJECT(.\Objects\TEST.obj)
+
+line level    source
+
+   1          #include <REGX51.H>
+   2          
+   3          //chan ket noi lcd
+   4          #define LCD_RS  P0_0
+   5          #define LCD_RW  P0_1
+   6          #define LCD_EN  P0_2
+   7          #define LCD_D4  P0_4
+   8          #define LCD_D5  P0_5
+   9          #define LCD_D6  P0_6
+  10          #define LCD_D7  P0_7
+  11          
+  12          //chan ket noi ADC0804 
+  13          #define CS  P3_3
+  14          #define RD  P3_2
+  15          #define WR  P3_1
+  16          #define INTR P3_0
+  17          #define Data P2
+  18          
+  19          // chan ra tin hieu canh bao
+  20          #define led P3_6     // canh bao muc 1
+  21          #define chuong P3_7  // canh bao nguy hiem
+  22          
+  23          // --- Delay ---
+  24          void delay_us(unsigned int t){
+  25   1          while(t--);
+  26   1      }
+  27          
+  28          void delay_ms(unsigned int t){
+  29   1          unsigned int i, j;
+  30   1          for(i = 0; i < t; i++)
+  31   1              for(j = 0; j < 125; j++);
+  32   1      }
+  33          
+  34          void delay(long time){
+  35   1          time = time * 25;
+  36   1          while(time--);
+  37   1      }
+  38          
+  39          // --- LCD ---
+  40          void LCD_Enable(void){
+  41   1          LCD_EN = 1;
+  42   1          delay_us(3);
+  43   1          LCD_EN = 0;
+  44   1          delay_us(50);
+  45   1      }
+  46          
+  47          void LCD_Send4Bit(unsigned char Data){
+  48   1          LCD_D4 = Data & 0x01;
+  49   1          LCD_D5 = (Data >> 1) & 1;
+  50   1          LCD_D6 = (Data >> 2) & 1;
+  51   1          LCD_D7 = (Data >> 3) & 1;
+  52   1      }
+  53          
+  54          void LCD_SendCommand(unsigned char command){
+C51 COMPILER V9.60.7.0   TEST                                                              06/06/2025 00:12:36 PAGE 2   
+
+  55   1          LCD_Send4Bit(command >> 4);
+  56   1          LCD_Enable();
+  57   1          LCD_Send4Bit(command);
+  58   1          LCD_Enable();
+  59   1      }
+  60          
+  61          void LCD_Clear(){
+  62   1          LCD_SendCommand(0x01);
+  63   1          delay_ms(2);
+  64   1      }
+  65          
+  66          void LCD_Init(){
+  67   1          LCD_Send4Bit(0x00);
+  68   1          delay_ms(20);
+  69   1          LCD_RS = 0;
+  70   1          LCD_RW = 0;
+  71   1          LCD_Send4Bit(0x03); LCD_Enable(); delay_ms(5);
+  72   1          LCD_Send4Bit(0x03); LCD_Enable(); delay_us(100);
+  73   1          LCD_Send4Bit(0x03); LCD_Enable();
+  74   1          LCD_Send4Bit(0x02); LCD_Enable();
+  75   1      
+  76   1          LCD_SendCommand(0x28); // 2 dong, font 5x8
+  77   1          LCD_SendCommand(0x0C); // hien thi, tat con tro
+  78   1          LCD_SendCommand(0x06); // tang dia chi
+  79   1          LCD_SendCommand(0x01); // xoa man hinh
+  80   1          delay_ms(2);
+  81   1      }
+  82          
+  83          void LCD_Gotoxy(unsigned char x, unsigned char y){
+  84   1          unsigned char address;
+  85   1          x -= 1; y -= 1;
+  86   1          address = y ? (0xC0 + x) : (0x80 + x);
+  87   1          LCD_SendCommand(address);
+  88   1          delay_us(50);
+  89   1      }
+  90          
+  91          void LCD_PutChar(unsigned char Data){
+  92   1          LCD_RS = 1;
+  93   1          LCD_SendCommand(Data);
+  94   1          LCD_RS = 0;
+  95   1      }
+  96          
+  97          void LCD_Puts(char *s){
+  98   1          while (*s){
+  99   2              LCD_PutChar(*s++);
+ 100   2          }
+ 101   1      }
+ 102          
+ 103          void LCD_PutNumber(int number){
+ 104   1          LCD_PutChar((number / 100) % 10 + '0');
+ 105   1          LCD_PutChar((number / 10) % 10 + '0');
+ 106   1          LCD_PutChar(number % 10 + '0');
+ 107   1      }
+ 108          
+ 109          // --- ADC0804 ---
+ 110          unsigned char ADC_Read(){
+ 111   1          unsigned char ketqua;
+ 112   1      
+ 113   1          CS = 0;
+ 114   1          WR = 0; WR = 1;
+ 115   1      
+ 116   1          while(INTR); // doi chuyen doi xong
+C51 COMPILER V9.60.7.0   TEST                                                              06/06/2025 00:12:36 PAGE 3   
+
+ 117   1      
+ 118   1          RD = 0;
+ 119   1          ketqua = Data; // doc gia tri ADC
+ 120   1          RD = 1;
+ 121   1      
+ 122   1          return ketqua;
+ 123   1      }
+ 124          
+ 125          // --- MAIN ---
+ 126          void main(){
+ 127   1          float kq;
+ 128   1          unsigned int giatri;
+ 129   1      
+ 130   1          // Khoi tao trang thai
+ 131   1          led = 0;
+ 132   1          chuong = 0;
+ 133   1      
+ 134   1          LCD_Init();
+ 135   1          LCD_Gotoxy(1,1); LCD_Puts("DO NONG DO GAS ");
+ 136   1          LCD_Gotoxy(1,2); LCD_Puts("VA CANH BAO    ");
+ 137   1          delay(2500);
+ 138   1          LCD_Clear();
+ 139   1      
+ 140   1          while(1){
+ 141   2              // Doc gia tri ADC
+ 142   2              kq = ADC_Read();
+ 143   2              giatri = (unsigned int)(kq / 0.511 + 0.5); // lam tron
+ 144   2      
+ 145   2              // DOng 1: canh bao
+ 146   2              LCD_Gotoxy(1,1);
+ 147   2              LCD_Puts("                "); // clear
+ 148   2              LCD_Gotoxy(1,1);
+ 149   2      
+ 150   2              if (giatri >= 50){
+ 151   3                  LCD_Puts("KHI GAS MUC CAO");
+ 152   3                  led = 1;
+ 153   3                  chuong = 1;
+ 154   3              } else if (giatri >= 25){
+ 155   3                  LCD_Puts("KHI GAS MUC THAP     ");
+ 156   3                  led = 1;
+ 157   3                  chuong = 0;
+ 158   3              } else {
+ 159   3                  LCD_Puts("     AN TOAN           ");
+ 160   3                  led = 0;
+ 161   3                  chuong = 0;
+ 162   3              }
+ 163   2      
+ 164   2              // DOng 2: gia tri
+ 165   2              LCD_Gotoxy(1,2);
+ 166   2              LCD_Puts("GIA TRI:     ");
+ 167   2              LCD_Gotoxy(10,2);
+ 168   2              LCD_PutNumber(giatri);
+ 169   2              LCD_Gotoxy(13,2);
+ 170   2              LCD_Puts("%");
+ 171   2      
+ 172   2              delay_ms(500);
+ 173   2          }
+ 174   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    603    ----
+C51 COMPILER V9.60.7.0   TEST                                                              06/06/2025 00:12:36 PAGE 4   
+
+   CONSTANT SIZE    =    127    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       9
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,22 @@
+#include <16F887.h>
+#fuses NOWDT, INTRC_IO
+#use delay(clock=8000000)
+
+#define CAMBIEN   PIN_A0
+#define LED_XANH  PIN_D2
+
+void main() {
+   set_tris_a(0xFF); // RA0 là input
+   set_tris_d(0x00); // PORTD là output
+   output_low(LED_XANH);
+
+   while(true) {
+      if (input(CAMBIEN)) {
+         output_high(LED_XANH);  // Có ngu?i
+      } else {
+         output_low(LED_XANH);   // Không có ngu?i
+      }
+      delay_ms(50); // Gi?m nh?p nháy, ch?ng nhi?u
+   }
+}
+

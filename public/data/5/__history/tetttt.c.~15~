@@ -1,0 +1,63 @@
+#include <16F887.h>
+#fuses HS, NOWDT, NOPUT, NOLVP
+#use delay(clock=12000000)
+
+#define TRIG  PIN_C0
+#define ECHO  PIN_C1
+#define LED   PIN_D2
+
+void send_trigger() {
+   output_low(TRIG);
+   delay_us(5);
+   output_high(TRIG);
+   delay_us(10);
+   output_low(TRIG);
+}
+
+unsigned int16 get_echo_time() {
+   unsigned int16 time = 0;
+
+   // Ð?i Echo lên m?c cao (timeout don gi?n)
+   int i = 0;
+   while(!input(ECHO) && i++ < 10000); 
+
+   set_timer1(0);
+   while(input(ECHO)) {
+      if(get_timer1() > 30000) break; // tránh treo khi không có tín hi?u
+   }
+
+   time = get_timer1();
+   return time;
+}
+
+unsigned int16 get_distance_cm() {
+   unsigned int16 duration = 0;
+   float distance_cm = 0;
+
+   send_trigger();
+   duration = get_echo_time();
+
+   distance_cm = (float)duration / 58.0;
+
+   return (unsigned int16)distance_cm;
+}
+
+void main() {
+   setup_timer_1(T1_INTERNAL | T1_DIV_BY_1); // Tick m?i 1us
+   set_tris_c(0b00000010); // RC1 input (ECHO), RC0 output (TRIG)
+   set_tris_d(0b11111011); // RD2 output
+   output_low(LED);
+
+   while(TRUE) {
+      unsigned int16 distance = get_distance_cm();
+
+      if(distance > 0 && distance <= 10) {
+         output_high(LED);
+      } else {
+         output_low(LED);
+      }
+
+      delay_ms(200);
+   }
+}
+

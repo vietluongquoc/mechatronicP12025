@@ -1,0 +1,104 @@
+#include <16F887.h>
+#fuses XT, NOWDT, NOMCLR
+#use delay(clock=12000000)
+
+#define PIR         PIN_A0
+#define LED_XANH    PIN_D2
+#define LED_DO      PIN_D3
+#define IN1         PIN_C0
+#define IN2         PIN_C1
+#define LIMIT_OPEN  PIN_B0  // Công t?c m? h?t (nh?n = 0)
+#define LIMIT_CLOSE PIN_B1  // Công t?c dóng h?t (nh?n = 0)
+
+void motor_forward() {
+   output_high(IN1);
+   output_low(IN2);
+}
+
+void motor_reverse() {
+   output_low(IN1);
+   output_high(IN2);
+}
+
+void motor_stop() {
+   output_low(IN1);
+   output_low(IN2);
+}
+
+void main() {
+   set_tris_a(0xFF); // PIR input
+   set_tris_b(0xFF); // Công t?c hành trình input
+   set_tris_c(0x00); // Motor output
+   set_tris_d(0x00); // LED output
+
+   output_low(LED_XANH);
+   output_low(LED_DO);
+   motor_stop();
+
+   while(TRUE) {
+      if(input(PIR)) {
+         // M? c?a n?u chua m? h?t
+         if(input(LIMIT_OPEN)) {
+            output_high(LED_XANH);
+            output_high(LED_DO);
+            motor_forward();
+
+            // Ð?i t?i khi ch?m công t?c LIMIT_OPEN (nh?n = 0)
+            while(input(LIMIT_OPEN)); 
+
+            motor_stop();
+            output_low(LED_DO);
+         }
+
+         delay_ms(2000); // Ð?i 2s
+
+         // Ðóng c?a n?u chua dóng h?t
+         if(input(LIMIT_CLOSE)) {
+            output_high(LED_DO);
+            motor_reverse();
+
+            int nguoi_phat_hien = 0;
+            while(input(LIMIT_CLOSE)) {
+               if(input(PIR)) {
+                  nguoi_phat_hien = 1;
+                  break;
+               }
+            }
+
+            motor_stop();
+            output_low(LED_DO);
+
+            if(nguoi_phat_hien) {
+               // M? l?i n?u dang dóng mà phát hi?n ngu?i
+               if(input(LIMIT_OPEN)) {
+                  output_high(LED_XANH);
+                  output_high(LED_DO);
+                  motor_forward();
+
+                  while(input(LIMIT_OPEN)); // Ch? m? h?t
+
+                  motor_stop();
+                  output_low(LED_DO);
+                  output_low(LED_XANH);
+               }
+
+               delay_ms(2000);
+
+               // Ðóng l?i
+               if(input(LIMIT_CLOSE)) {
+                  output_high(LED_DO);
+                  motor_reverse();
+
+                  while(input(LIMIT_CLOSE)); // Ch? dóng h?t
+
+                  motor_stop();
+                  output_low(LED_DO);
+               }
+            }
+
+            output_low(LED_XANH);
+         }
+      }
+   }
+}
+
