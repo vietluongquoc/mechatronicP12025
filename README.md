@@ -5,6 +5,7 @@ This is the Mechatronics Project 1 Course!
 
 - Supervisor: Quoc-Viet, Luong
 - Email: vietlq@huit.edu.vn
+- Link Project
 
 ### List member
 
